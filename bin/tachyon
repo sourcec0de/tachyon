@@ -7,6 +7,9 @@ let path = require('path');
 let yargs = require('yargs');
 let expandPath = require('../lib/expandPath');
 let watch = require('../lib/index');
+let cliHeader = require('../lib/cliheader');
+console.log(cliHeader);
+
 let defaults = {
   config: path.join(process.cwd(), '.tachyon.js')
 };
@@ -23,5 +26,6 @@ let config = _.defaults(require(configPath), {
   projectDir: expandPath(process.cwd()),
   testDir: './tests'
 });
+
 
 watch(config);
