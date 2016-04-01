@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+'use strict';
+
+let _ = require('lodash');
+let path = require('path');
+let yargs = require('yargs');
+let expandPath = require('../lib/expandPath');
+let watch = require('../lib/index');
+let defaults = {
+  config: path.join(process.cwd(), '.tachyon.js')
+};
+
+let argv = yargs
+            .usage('tachyon [options]')
+            .default('config', defaults.config, 'path to tachyon config file')
+            .help('help')
+            .argv;
+
+
+let configPath = expandPath(argv.config);
+let config = _.defaults(require(configPath), {
+  projectDir: expandPath(process.cwd()),
+  testDir: './tests'
+});
+
+watch(config);
