@@ -42,18 +42,18 @@ let commands = {init, watch};
 
 yargs
   .usage('tachyon [command]')
+  .command('init', 'setup tachyon in your local project', undefined, commands.init)
+  .command('watch', 'watch this project', undefined, commands.watch)
+  .help('h')
+  .version(function() {
+    return JSON.parse(fs.readFileSync(pkgJson, 'utf8')).version;
+  })
   .option('f', {
     alias: 'file',
     default: configPath,
     describe: 'tachyon config file',
     type: 'string'
   })
-  .version(function() {
-    return JSON.parse(fs.readFileSync(pkgJson, 'utf8')).version;
-  })
-  .command('init', 'setup tachyon in your local project', undefined, commands.init)
-  .command('watch', 'watch this project', undefined, commands.watch)
-  .help('h')
   .demand(1)
   .strict()
   .argv;
