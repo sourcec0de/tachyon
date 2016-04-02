@@ -2,30 +2,40 @@
 
 'use strict';
 
-let _ = require('lodash');
+let fs = require('fs');
 let path = require('path');
 let yargs = require('yargs');
-let expandPath = require('../lib/expandPath');
+let mkdirp = require('mkdirp');
 let watch = require('../lib/index');
 let cliHeader = require('../lib/cliheader');
-console.log(cliHeader);
+let configPath = path.join(process.cwd(), '.tachyon.js');
+let TachyonConfig = require('../lib/config');
+let confTempPath = path.resolve(__dirname, '../lib/.tachyon.template.js');
+let confTemp = fs.readFileSync(confTempPath, 'utf8');
 
-let defaults = {
-  config: path.join(process.cwd(), '.tachyon.js')
+let commands = {
+  init: function(){
+    mkdirp.sync('./tests/_fixtures');
+    mkdirp.sync('./tests/_setup');
+    if (fs.existsSync(configPath)) {
+      console.log('cannot overwrite existing config at:', configPath);
+      process.exit(1);
+    } else {
+      fs.writeFileSync(configPath, confTemp);
+      console.log('wrote template to:', configPath);
+      process.exit();
+    }
+  },
+
+  watch: function(){
+    console.log(cliHeader);
+    watch(new TachyonConfig(configPath));
+  }
 };
 
-let argv = yargs
-            .usage('tachyon [options]')
-            .default('config', defaults.config, 'path to tachyon config file')
-            .help('help')
-            .argv;
-
-
-let configPath = expandPath(argv.config);
-let config = _.defaults(require(configPath), {
-  projectDir: expandPath(process.cwd()),
-  testDir: './tests'
-});
-
-
-watch(config);
+yargs
+  .usage('tachyon [command]')
+  .command('init', 'setup tachyon in your local project', undefined, commands.init)
+  .command('watch', 'watch this project', undefined, commands.watch)
+  .help('help')
+  .argv;
