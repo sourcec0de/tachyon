@@ -32,16 +32,24 @@ function init(){
   process.exit();
 }
 
-function watch(){
+function watch(argv){
   console.log(cliHeader);
-  startWatch(new TachyonConfig(configPath));
+  startWatch(new TachyonConfig(argv.file));
 }
 
 let commands = {init, watch};
 
 yargs
   .usage('tachyon [command]')
+  .option('f', {
+    alias: 'file',
+    default: configPath,
+    describe: 'tachyon config file',
+    type: 'string'
+  })
   .command('init', 'setup tachyon in your local project', undefined, commands.init)
   .command('watch', 'watch this project', undefined, commands.watch)
-  .help('help')
+  .help('h')
+  .demand(1)
+  .strict()
   .argv;
